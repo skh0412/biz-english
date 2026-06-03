@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BizEnglish">
+<meta name="theme-color" content="#1a1a2e">
+<title>BizEnglish Daily</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0f0f1a;
+  --bg2: #1a1a2e;
+  --bg3: #22223a;
+  --card: #1e1e32;
+  --card2: #252540;
+  --accent: #7c6ff7;
+  --accent2: #a59ef8;
+  --accent-dim: rgba(124,111,247,0.15);
+  --teal: #2dd4bf;
+  --teal-dim: rgba(45,212,191,0.12);
+  --coral: #f87171;
+  --coral-dim: rgba(248,113,113,0.12);
+  --amber: #fbbf24;
+  --text: #e8e8f0;
+  --text2: #9090b0;
+  --text3: #5a5a78;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --font: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); }
+
+body {
+  font-family: var(--font);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* ── NAV ── */
+.nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+  background: var(--bg2);
+  border-top: 0.5px solid var(--border2);
+  flex-shrink: 0;
+  order: 2;
+}
+.nav-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  background: none; border: none; color: var(--text3); cursor: pointer;
+  font-family: var(--font); font-size: 10px; padding: 4px 16px;
+  transition: color .2s;
+}
+.nav-btn svg { width: 22px; height: 22px; stroke-width: 1.8; }
+.nav-btn.active { color: var(--accent2); }
+
+/* ── SCREENS ── */
+.screen { display: none; flex-direction: column; flex: 1; overflow-y: auto; overflow-x: hidden; order: 1; }
+.screen.active { display: flex; }
+
+/* ── HOME ── */
+.home-header {
+  padding: 52px 20px 24px;
+  background: linear-gradient(160deg, #1a1a3e 0%, var(--bg) 100%);
+  flex-shrink: 0;
+}
+.home-greeting { font-size: 13px; color: var(--text2); margin-bottom: 4px; }
+.home-title { font-size: 26px; font-weight: 600; line-height: 1.2; }
+.home-title span { color: var(--accent2); }
+
+.streak-row {
+  display: flex; gap: 10px; padding: 0 20px; margin: 16px 0;
+}
+.streak-card {
+  flex: 1; background: var(--card); border-radius: var(--radius-sm);
+  border: 0.5px solid var(--border); padding: 14px 12px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.streak-num { font-size: 28px; font-weight: 600; }
+.streak-num.fire { color: var(--amber); }
+.streak-num.check { color: var(--teal); }
+.streak-label { font-size: 11px; color: var(--text2); }
+
+.today-card {
+  margin: 0 20px 16px;
+  background: var(--card); border-radius: var(--radius);
+  border: 0.5px solid var(--border); overflow: hidden;
+}
+.today-bar {
+  height: 4px; background: var(--bg3);
+}
+.today-bar-fill {
+  height: 100%; background: linear-gradient(90deg, var(--accent), var(--teal));
+  transition: width .5s ease;
+}
+.today-inner { padding: 16px 18px; }
+.today-label { font-size: 11px; color: var(--text2); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .8px; }
+.today-big { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+.today-sub { font-size: 13px; color: var(--text2); }
+
+.start-btn {
+  margin: 0 20px 16px;
+  width: calc(100% - 40px);
+  padding: 16px;
+  background: var(--accent);
+  border: none; border-radius: var(--radius);
+  color: #fff; font-family: var(--font); font-size: 16px; font-weight: 600;
+  cursor: pointer; letter-spacing: .3px;
+  transition: opacity .15s, transform .1s;
+}
+.start-btn:active { opacity: .85; transform: scale(.98); }
+.start-btn.done-btn { background: var(--bg3); color: var(--text2); }
+
+.section-label {
+  padding: 0 20px; margin-bottom: 10px;
+  font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: .8px;
+}
+.cat-scroll {
+  display: flex; gap: 8px; padding: 0 20px 20px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.cat-scroll::-webkit-scrollbar { display: none; }
+.cat-chip {
+  flex-shrink: 0; padding: 8px 14px;
+  background: var(--card); border: 0.5px solid var(--border);
+  border-radius: 99px; font-size: 12px; color: var(--text2);
+  cursor: pointer; white-space: nowrap; transition: all .15s;
+}
+.cat-chip.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent2); }
+
+/* ── STUDY ── */
+.study-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 52px 20px 16px; flex-shrink: 0;
+}
+.study-back {
+  background: none; border: none; color: var(--text2); cursor: pointer;
+  display: flex; align-items: center; gap: 4px; font-family: var(--font); font-size: 14px;
+}
+.study-back svg { width: 18px; height: 18px; stroke-width: 2; }
+.study-progress-text { font-size: 12px; color: var(--text3); font-family: var(--font-mono); }
+
+.study-prog-bar {
+  height: 3px; background: var(--bg3); margin: 0 20px; border-radius: 99px; flex-shrink: 0;
+}
+.study-prog-fill {
+  height: 100%; background: linear-gradient(90deg, var(--accent), var(--teal));
+  border-radius: 99px; transition: width .4s ease;
+}
+
+.scenario-scroll { flex: 1; overflow-y: auto; padding: 16px 20px 24px; }
+
+.sc-situation-box {
+  background: var(--bg3); border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent); padding: 12px 14px;
+  font-size: 13px; color: var(--text2); line-height: 1.65; margin-bottom: 16px;
+}
+
+.chat-area { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.msg-row { display: flex; gap: 8px; align-items: flex-end; }
+.msg-row.me { flex-direction: row-reverse; }
+.av {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600; flex-shrink: 0;
+}
+.av-other { background: var(--teal-dim); color: var(--teal); }
+.av-me { background: var(--accent-dim); color: var(--accent2); }
+.bubble {
+  max-width: 78%; padding: 10px 14px; font-size: 14px; line-height: 1.6;
+  color: var(--text);
+}
+.bubble-other {
+  background: var(--card2); border-radius: 4px 14px 14px 14px;
+}
+.bubble-me {
+  background: var(--accent-dim); border: 0.5px solid rgba(124,111,247,.25);
+  border-radius: 14px 4px 14px 14px;
+}
+.hl { color: var(--accent2); font-weight: 500; }
+.msg-name { font-size: 10px; color: var(--text3); margin-bottom: 3px; padding: 0 4px; }
+
+.reveal-section { margin-bottom: 16px; }
+.reveal-btn {
+  width: 100%; padding: 14px;
+  background: var(--card); border: 0.5px solid var(--border2);
+  border-radius: var(--radius-sm); color: var(--text2);
+  font-family: var(--font); font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all .15s;
+}
+.reveal-btn:active { background: var(--card2); }
+.reveal-btn svg { width: 16px; height: 16px; stroke-width: 2; }
+
+.phrases-box {
+  background: var(--card); border-radius: var(--radius-sm);
+  border: 0.5px solid var(--border); overflow: hidden; margin-bottom: 10px;
+}
+.phrase-row {
+  display: flex; align-items: baseline; gap: 10px;
+  padding: 11px 14px; border-bottom: 0.5px solid var(--border);
+}
+.phrase-row:last-child { border-bottom: none; }
+.phrase-en { font-size: 13px; font-weight: 500; color: var(--text); flex: 1; }
+.phrase-kr { font-size: 12px; color: var(--text2); flex-shrink: 0; }
+
+.tip-box {
+  background: var(--teal-dim); border-radius: var(--radius-sm);
+  border: 0.5px solid rgba(45,212,191,.2);
+  padding: 12px 14px; font-size: 13px; color: var(--teal);
+  line-height: 1.65; margin-bottom: 16px;
+  display: flex; gap: 8px;
+}
+.tip-box svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; stroke-width: 2; }
+
+.mark-row { display: flex; gap: 10px; }
+.mark-btn {
+  flex: 1; padding: 14px 10px; border-radius: var(--radius-sm);
+  border: 0.5px solid var(--border2); font-family: var(--font); font-size: 14px;
+  cursor: pointer; font-weight: 500; transition: all .15s;
+}
+.mark-btn:active { transform: scale(.97); }
+.mark-again { background: var(--coral-dim); color: var(--coral); border-color: rgba(248,113,113,.3); }
+.mark-good { background: var(--teal-dim); color: var(--teal); border-color: rgba(45,212,191,.3); }
+
+.done-screen {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 40px 20px; text-align: center; gap: 12px;
+}
+.done-icon { font-size: 56px; line-height: 1; }
+.done-title { font-size: 22px; font-weight: 600; }
+.done-sub { font-size: 14px; color: var(--text2); line-height: 1.6; }
+.done-stats { display: flex; gap: 12px; margin: 8px 0; }
+.done-stat { background: var(--card); border-radius: var(--radius-sm); padding: 14px 20px; text-align: center; }
+.done-stat-n { font-size: 24px; font-weight: 600; }
+.done-stat-n.g { color: var(--teal); }
+.done-stat-n.r { color: var(--coral); }
+.done-stat-l { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.done-back-btn {
+  margin-top: 8px; padding: 14px 32px;
+  background: var(--accent); border: none; border-radius: var(--radius-sm);
+  color: #fff; font-family: var(--font); font-size: 15px; font-weight: 600; cursor: pointer;
+}
+
+/* ── LIST ── */
+.list-topbar {
+  padding: 52px 20px 16px; flex-shrink: 0;
+  font-size: 20px; font-weight: 600;
+}
+.list-filter { display: flex; gap: 6px; padding: 0 20px 12px; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; }
+.list-filter::-webkit-scrollbar { display: none; }
+.lf-chip { flex-shrink: 0; padding: 6px 12px; border-radius: 99px; border: 0.5px solid var(--border); font-size: 12px; color: var(--text2); cursor: pointer; background: var(--card); transition: all .15s; }
+.lf-chip.on { background: var(--accent-dim); border-color: var(--accent); color: var(--accent2); }
+
+.list-scroll { flex: 1; overflow-y: auto; padding: 0 20px 20px; }
+.list-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 14px; background: var(--card);
+  border-radius: var(--radius-sm); margin-bottom: 8px;
+  border: 0.5px solid var(--border); cursor: pointer;
+  transition: border-color .15s;
+}
+.list-item:active { border-color: var(--border2); }
+.li-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-good { background: var(--teal); }
+.dot-again { background: var(--coral); }
+.dot-none { background: var(--text3); }
+.li-info { flex: 1; }
+.li-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+.li-cat { font-size: 11px; color: var(--text2); }
+.li-arr { color: var(--text3); }
+.li-arr svg { width: 16px; height: 16px; stroke-width: 2; }
+
+/* ── STATS ── */
+.stats-topbar {
+  padding: 52px 20px 24px;
+  font-size: 20px; font-weight: 600; flex-shrink: 0;
+}
+.stats-scroll { flex: 1; overflow-y: auto; padding: 0 20px 24px; }
+.big-stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.big-stat-card {
+  background: var(--card); border-radius: var(--radius);
+  border: 0.5px solid var(--border); padding: 18px 16px;
+}
+.big-stat-n { font-size: 36px; font-weight: 600; margin-bottom: 4px; }
+.big-stat-n.accent { color: var(--accent2); }
+.big-stat-n.teal { color: var(--teal); }
+.big-stat-n.amber { color: var(--amber); }
+.big-stat-l { font-size: 12px; color: var(--text2); }
+
+.week-strip { display: flex; gap: 6px; margin-bottom: 20px; }
+.day-pill {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 10px 4px; background: var(--card); border-radius: var(--radius-sm);
+  border: 0.5px solid var(--border); font-size: 10px; color: var(--text3);
+}
+.day-circle {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600;
+}
+.day-done { background: var(--teal); color: #0f1a18; }
+.day-today { background: var(--accent); color: #fff; }
+.day-miss { background: var(--bg3); color: var(--text3); }
+
+.stats-section-title { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 10px; }
+.cat-progress { margin-bottom: 20px; }
+.cat-prog-row { margin-bottom: 10px; }
+.cat-prog-info { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px; }
+.cat-prog-pct { color: var(--text2); font-family: var(--font-mono); font-size: 12px; }
+.cat-prog-track { height: 5px; background: var(--bg3); border-radius: 99px; overflow: hidden; }
+.cat-prog-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--teal)); }
+
+.reset-btn {
+  width: 100%; padding: 14px; background: none;
+  border: 0.5px solid var(--border2); border-radius: var(--radius-sm);
+  color: var(--text3); font-family: var(--font); font-size: 14px; cursor: pointer;
+  margin-top: 8px;
+}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div class="screen active" id="screen-home">
+  <div class="home-header">
+    <div class="home-greeting" id="greeting">Good morning,</div>
+    <div class="home-title">매일 10분,<br><span>회의 영어</span> 마스터</div>
+  </div>
+
+  <div class="streak-row">
+    <div class="streak-card">
+      <div class="streak-num fire" id="streak-num">0</div>
+      <div class="streak-label">🔥 연속 학습일</div>
+    </div>
+    <div class="streak-card">
+      <div class="streak-num check" id="total-done-num">0</div>
+      <div class="streak-label">✓ 완료한 시나리오</div>
+    </div>
+  </div>
+
+  <div class="today-card">
+    <div class="today-bar"><div class="today-bar-fill" id="today-bar-fill" style="width:0%"></div></div>
+    <div class="today-inner">
+      <div class="today-label">오늘의 학습</div>
+      <div class="today-big" id="today-big">아직 시작하지 않았습니다</div>
+      <div class="today-sub" id="today-sub">시나리오 5개 · 약 10분</div>
+    </div>
+  </div>
+
+  <button class="start-btn" id="start-btn" onclick="startStudy()">오늘 학습 시작 →</button>
+
+  <div class="section-label">카테고리별 학습</div>
+  <div class="cat-scroll" id="cat-chips"></div>
+</div>
+
+<!-- STUDY -->
+<div class="screen" id="screen-study">
+  <div class="study-topbar">
+    <button class="study-back" onclick="goHome()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M5 12l7-7M5 12l7 7"/></svg>
+      홈
+    </button>
+    <div class="study-progress-text" id="study-prog-text">1 / 5</div>
+  </div>
+  <div class="study-prog-bar"><div class="study-prog-fill" id="study-prog-fill"></div></div>
+  <div class="scenario-scroll" id="scenario-scroll"></div>
+</div>
+
+<!-- LIST -->
+<div class="screen" id="screen-list">
+  <div class="list-topbar">전체 시나리오</div>
+  <div class="list-filter" id="list-filter"></div>
+  <div class="list-scroll" id="list-scroll"></div>
+</div>
+
+<!-- STATS -->
+<div class="screen" id="screen-stats">
+  <div class="stats-topbar">학습 통계</div>
+  <div class="stats-scroll" id="stats-scroll"></div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" id="nav-home" onclick="showScreen('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+    홈
+  </button>
+  <button class="nav-btn" id="nav-list" onclick="showScreen('list')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    목록
+  </button>
+  <button class="nav-btn" id="nav-stats" onclick="showScreen('stats')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    통계
+  </button>
+</nav>
+
+<script>
+const SCENARIOS = [
+  {cat:"회의 시작", title:"회의 열기 & 안건 소개",
+   situation:"당신은 팀장으로 월간 프로젝트 검토 회의를 주관합니다. 참석자 7명이 접속한 상황입니다.",
+   dialogue:[
+    {who:"other",name:"팀원",text:"Is everyone here? Should we get going?"},
+    {who:"me",name:"나",text:"<hl>Let's get started.</hl> Thanks everyone for joining. <hl>Let me quickly go over the agenda.</hl> We have three items today — project status, blockers, and next sprint planning."},
+    {who:"other",name:"팀원",text:"Sounds good. Should we start with the status update?"},
+    {who:"me",name:"나",text:"Exactly. <hl>The purpose of today's meeting is to</hl> align on where we stand before the client review on Friday."}
+   ],
+   phrases:[
+    {en:"Let's get started.",kr:"시작하죠."},
+    {en:"Let me quickly go over the agenda.",kr:"안건을 간략히 살펴보겠습니다."},
+    {en:"The purpose of today's meeting is to...",kr:"오늘 회의의 목적은 ~입니다."}
+   ],
+   tip:"회의 시작 첫 30초가 분위기를 결정합니다. 간결하게 목적과 안건을 먼저 제시하세요."
+  },
+  {cat:"발표 진행", title:"데이터 슬라이드 발표",
+   situation:"지난 분기 생산 효율 데이터를 발표 중입니다. 슬라이드를 넘기며 차트를 설명합니다.",
+   dialogue:[
+    {who:"me",name:"나",text:"<hl>I'll walk you through</hl> the key metrics from Q3. <hl>As you can see from this slide,</hl> output efficiency improved by 18% compared to last quarter."},
+    {who:"other",name:"임원",text:"What drove that improvement?"},
+    {who:"me",name:"나",text:"<hl>Let me draw your attention to</hl> the bottom chart. The main driver was the automation upgrade in Line 3. <hl>The key takeaway here is</hl> that further investment will compound these gains."}
+   ],
+   phrases:[
+    {en:"I'll walk you through...",kr:"~에 대해 설명하겠습니다."},
+    {en:"As you can see from this slide,",kr:"이 슬라이드에서 볼 수 있듯이"},
+    {en:"Let me draw your attention to...",kr:"~에 주목해 주세요."},
+    {en:"The key takeaway here is...",kr:"핵심 요점은..."}
+   ],
+   tip:"데이터를 말할 때는 숫자 → 원인 → 시사점 순으로 3단계로 설명하면 설득력이 높아집니다."
+  },
+  {cat:"의견 제시", title:"대안 방안 제안하기",
+   situation:"일정 지연 문제를 논의 중입니다. 팀원들이 추가 인력 투입을 제안하자, 당신은 다른 방안을 제시하려 합니다.",
+   dialogue:[
+    {who:"other",name:"동료",text:"I think we need to bring in two more engineers to meet the deadline."},
+    {who:"me",name:"나",text:"<hl>I'd like to propose an alternative approach.</hl> Instead of adding headcount, <hl>one option worth considering is</hl> a phased delivery — release core features first and push enhancements to the next sprint."},
+    {who:"other",name:"동료",text:"What's your rationale?"},
+    {who:"me",name:"나",text:"<hl>Based on the data,</hl> onboarding new engineers mid-sprint costs us two weeks of ramp-up time. A phased release keeps us client-facing on schedule."}
+   ],
+   phrases:[
+    {en:"I'd like to propose an alternative approach.",kr:"대안을 제안하고 싶습니다."},
+    {en:"One option worth considering is...",kr:"고려할 만한 방안으로는..."},
+    {en:"Based on the data, I think we should...",kr:"데이터를 근거로, ~해야 한다고 생각합니다."}
+   ],
+   tip:"반대 의견을 낼 때 상대 제안을 부정하지 말고 '대안'으로 프레이밍하면 수용성이 높아집니다."
+  },
+  {cat:"동의·반대", title:"의견 차이 조율",
+   situation:"마케팅 예산 증액안을 논의 중입니다. 당신은 동의하지 않지만 공격적이지 않게 반론을 제기해야 합니다.",
+   dialogue:[
+    {who:"other",name:"마케팅팀장",text:"We should double the digital ad budget next quarter. The ROI has been strong."},
+    {who:"me",name:"나",text:"<hl>That's a valid point,</hl> and I agree the ROI looks promising. <hl>I see your point, but</hl> I'm concerned about the timing — Q1 is our tightest cash-flow period."},
+    {who:"other",name:"마케팅팀장",text:"We could offset it by reducing offline spend."},
+    {who:"me",name:"나",text:"<hl>I'm not entirely convinced that</hl> cutting offline is right now. <hl>I'd push back a little on that</hl> — our brand awareness in regional markets still depends on it."}
+   ],
+   phrases:[
+    {en:"That's a valid point.",kr:"그건 타당한 지적입니다."},
+    {en:"I see your point, but...",kr:"말씀하신 뜻은 알겠지만..."},
+    {en:"I'm not entirely convinced that...",kr:"~에 대해 완전히 확신하지 못합니다."},
+    {en:"I'd push back a little on that.",kr:"그 부분에 반론을 제기하고 싶습니다."}
+   ],
+   tip:"동의하는 부분을 먼저 인정한 뒤 반론하면 (Yes, but...) 방어적 반응을 줄일 수 있습니다."
+  },
+  {cat:"질문·확인", title:"예상 외 질문 받기",
+   situation:"발표가 끝난 후 임원이 세부 질문을 합니다. 바로 답하기 어려운 상황입니다.",
+   dialogue:[
+    {who:"other",name:"임원",text:"You mentioned a 20% efficiency gain — can you break that down by production line?"},
+    {who:"me",name:"나",text:"<hl>That's a great question. Let me think about that for a moment.</hl> The aggregate number is what we've validated so far. <hl>I don't have that breakdown with me right now,</hl> but I can pull the line-by-line data after the meeting."},
+    {who:"other",name:"임원",text:"Okay. What's driving the variance between lines?"},
+    {who:"me",name:"나",text:"<hl>I'll need to get back to you on that</hl> with the full analysis. <hl>I'm not sure about the exact figure, but roughly</hl> Line 3 accounts for the majority of the gain."}
+   ],
+   phrases:[
+    {en:"That's a great question. Let me think about that for a moment.",kr:"좋은 질문입니다. 잠깐 생각해 보겠습니다."},
+    {en:"I don't have that information with me right now.",kr:"지금 당장 그 정보를 가지고 있지 않습니다."},
+    {en:"I'll need to get back to you on that.",kr:"나중에 답변드리겠습니다."}
+   ],
+   tip:"모른다고 침묵하는 것보다 '확인 후 알려드리겠다'는 답이 훨씬 전문적입니다."
+  },
+  {cat:"진행 조율", title:"회의 궤도 잡기",
+   situation:"회의가 40분째 진행 중인데 토론이 원래 안건에서 벗어나고 있습니다.",
+   dialogue:[
+    {who:"other",name:"팀원A",text:"Actually, should we also revisit the vendor contract from last year?"},
+    {who:"me",name:"나",text:"That's worth discussing, but <hl>let's park that idea and move on</hl> — <hl>we're running short on time.</hl> We still need to cover sprint planning."},
+    {who:"other",name:"팀원B",text:"Should we reschedule the vendor discussion?"},
+    {who:"me",name:"나",text:"Yes. <hl>Let's table this for now and come back to it later.</hl> I'll set up a separate 30-minute slot. <hl>Let's go around the room and get everyone's input</hl> on the sprint priorities first."}
+   ],
+   phrases:[
+    {en:"Can we stay on topic?",kr:"주제에서 벗어나지 않을 수 있을까요?"},
+    {en:"Let's park that idea and move on.",kr:"그 아이디어는 보류하고 넘어가죠."},
+    {en:"Let's table this for now.",kr:"잠깐 미뤄 두고 나중에 다시 다루죠."},
+    {en:"Let's go around the room.",kr:"모두의 의견을 들어봅시다."}
+   ],
+   tip:"회의 주관자의 가장 중요한 역할은 시간 관리입니다. 단호하지만 예의 바르게 궤도를 잡으세요."
+  },
+  {cat:"결정·액션", title:"액션 아이템 확정",
+   situation:"회의 막바지입니다. 논의된 내용을 액션 아이템으로 정리하고 담당자를 지정해야 합니다.",
+   dialogue:[
+    {who:"me",name:"나",text:"<hl>So, are we all aligned on this?</hl> To recap — phased delivery, revised timeline by Thursday."},
+    {who:"other",name:"팀원",text:"Agreed. Who handles the timeline?"},
+    {who:"me",name:"나",text:"<hl>Who's going to own this action item?</hl> I'd suggest James — he has full visibility into the sprint backlog."},
+    {who:"other",name:"James",text:"Sure. What's the deadline?"},
+    {who:"me",name:"나",text:"Thursday EOD. <hl>I'll send a summary of the decisions made today</hl> within the hour."}
+   ],
+   phrases:[
+    {en:"So, are we all aligned on this?",kr:"우리 모두 이에 동의하나요?"},
+    {en:"Who's going to own this action item?",kr:"이 액션 아이템은 누가 담당하나요?"},
+    {en:"I'll send a summary of the decisions made today.",kr:"오늘 결정 사항을 요약해서 보내드리겠습니다."}
+   ],
+   tip:"회의 마무리 5분은 반드시 액션 아이템 정리에 써야 합니다. 담당자 + 마감일을 항상 명시하세요."
+  },
+  {cat:"문제·우려", title:"리스크 제기",
+   situation:"신규 시스템 도입 계획을 논의 중입니다. 일정과 예산 리스크가 충분히 검토되지 않은 상황입니다.",
+   dialogue:[
+    {who:"other",name:"PM",text:"We're planning to go live with the new system in six weeks."},
+    {who:"me",name:"나",text:"<hl>I'm concerned about the timeline.</hl> Six weeks feels aggressive — data migration hasn't started yet. <hl>There's a potential risk we should consider:</hl> if migration runs over, it could push the go-live date."},
+    {who:"other",name:"PM",text:"What do you suggest?"},
+    {who:"me",name:"나",text:"<hl>We need to address this before moving forward.</hl> <hl>What's the contingency plan if this doesn't work out</hl> on schedule?"}
+   ],
+   phrases:[
+    {en:"I'm concerned about the timeline.",kr:"일정이 우려됩니다."},
+    {en:"There's a potential risk we should consider.",kr:"고려해야 할 잠재적 위험이 있습니다."},
+    {en:"What's the contingency plan?",kr:"대비책은 무엇인가요?"}
+   ],
+   tip:"리스크를 제기할 때는 문제 지적에서 끝내지 말고 '그래서 어떻게 할 것인가'로 이어지게 하세요."
+  },
+  {cat:"협력·요청", title:"타 부서 협조 요청",
+   situation:"설비 데이터 분석 프로젝트를 위해 데이터 엔지니어링 팀에 협조를 구합니다.",
+   dialogue:[
+    {who:"me",name:"나",text:"I wanted to follow up on the PdM analytics project. <hl>I'll need your support on this</hl> — the analysis can't move forward without the sensor data from your team."},
+    {who:"other",name:"데이터팀장",text:"Of course. What format do you need?"},
+    {who:"me",name:"나",text:"A CSV export would work. <hl>Would you be able to provide an update by Friday?</hl> We're presenting to leadership on Monday."},
+    {who:"other",name:"데이터팀장",text:"Friday works."},
+    {who:"me",name:"나",text:"Thank you. <hl>I'd appreciate your input on the final report as well.</hl>"}
+   ],
+   phrases:[
+    {en:"I'll need your support on this.",kr:"이 건에 있어 도움이 필요합니다."},
+    {en:"Would you be able to provide an update by Friday?",kr:"금요일까지 업데이트를 제공해 주실 수 있나요?"},
+    {en:"I'd appreciate your input on this.",kr:"이 건에 대한 의견을 부탁드립니다."}
+   ],
+   tip:"요청할 때는 이유(왜 필요한지)와 기한(언제까지)을 함께 제시하면 거절률이 낮아집니다."
+  },
+  {cat:"가상 회의", title:"화상 회의 트러블슈팅",
+   situation:"화상 회의 도중 참석자의 마이크가 작동하지 않고 화면 공유가 끊겼습니다.",
+   dialogue:[
+    {who:"other",name:"동료",text:"...and the key issue is— (끊김)"},
+    {who:"me",name:"나",text:"<hl>We seem to have a connection issue.</hl> Your audio is cutting out. <hl>Could you use the chat to capture that</hl> key point while we sort this out?"},
+    {who:"other",name:"동료",text:"Can everyone hear me now?"},
+    {who:"me",name:"나",text:"Not yet — <hl>can everyone hear me clearly?</hl> Let's hold for 30 seconds. <hl>Could you share your screen</hl> once you're back?"}
+   ],
+   phrases:[
+    {en:"We seem to have a connection issue.",kr:"연결 문제가 있는 것 같습니다."},
+    {en:"Can everyone hear me clearly?",kr:"다들 잘 들리시나요?"},
+    {en:"Could you share your screen?",kr:"화면 공유해 주실 수 있나요?"},
+    {en:"Sorry, I think I was on mute.",kr:"음소거가 되어 있었던 것 같습니다."}
+   ],
+   tip:"기술 문제가 생겼을 때 차분하게 대처하는 모습이 오히려 리더십을 보여줍니다."
+  },
+  {cat:"발표 마무리", title:"발표 마무리 & Q&A 전환",
+   situation:"20분 발표를 마치고 Q&A 세션으로 전환하는 시점입니다.",
+   dialogue:[
+    {who:"me",name:"나",text:"<hl>To wrap up,</hl> our three key recommendations are: prioritize Line 3 automation, allocate a 15% contingency buffer, and run a 4-week pilot before full rollout."},
+    {who:"other",name:"청중",text:"When would the pilot start?"},
+    {who:"me",name:"나",text:"<hl>I'll open it up for questions now.</hl> To answer yours — we're targeting the first week of next month, pending today's approval. <hl>Does anyone have any other questions?</hl>"}
+   ],
+   phrases:[
+    {en:"To wrap up...",kr:"마무리하자면..."},
+    {en:"In conclusion, our key findings are...",kr:"결론적으로, 핵심 결과는..."},
+    {en:"I'll open it up for questions now.",kr:"이제 질문을 받겠습니다."},
+    {en:"Does anyone have any questions?",kr:"질문 있으신 분 계신가요?"}
+   ],
+   tip:"발표 마무리는 요약 → 결론 → Q&A 전환 3단계로 하면 청중이 핵심을 다시 정리할 수 있습니다."
+  },
+  {cat:"회의 시작", title:"킥오프 미팅 진행",
+   situation:"외부 벤더와 첫 킥오프 미팅입니다. 처음 만나는 참석자들이 있어 간단한 소개가 필요합니다.",
+   dialogue:[
+    {who:"me",name:"나",text:"<hl>It's good to see everyone.</hl> <hl>Thank you all for joining on short notice.</hl> Let me quickly introduce our team before we dive in."},
+    {who:"other",name:"벤더",text:"Of course. We're excited to get started."},
+    {who:"me",name:"나",text:"<hl>I know everyone is busy, so I'll keep this concise.</hl> Today's goal is to align on scope, timeline, and next steps. <hl>I'd like to hear from</hl> your technical lead on integration requirements first."}
+   ],
+   phrases:[
+    {en:"It's good to see everyone.",kr:"다들 만나서 반갑습니다."},
+    {en:"Thank you all for joining on short notice.",kr:"갑작스러운 통보에도 참석해 주셔서 감사합니다."},
+    {en:"I know everyone is busy, so I'll keep this concise.",kr:"다들 바쁘시니 간결하게 진행하겠습니다."}
+   ],
+   tip:"킥오프 미팅에서는 '오늘 이 자리에서 무엇을 결정해야 하는가'를 명확히 하는 것이 가장 중요합니다."
+  },
+  {cat:"의견 제시", title:"PdM 전환 제안",
+   situation:"설비 유지보수 방식을 예방정비에서 예측정비로 전환하는 안건을 제안합니다.",
+   dialogue:[
+    {who:"me",name:"나",text:"<hl>I strongly believe that</hl> transitioning to predictive maintenance is the right move. <hl>From my perspective,</hl> our current PM schedule is too conservative and driving unnecessary downtime."},
+    {who:"other",name:"운영팀장",text:"The PM schedule has been working fine. Why change it?"},
+    {who:"me",name:"나",text:"<hl>Based on the data,</hl> we had 14 unplanned stoppages last year that PM didn't catch. <hl>My recommendation would be to</hl> run a 3-month pilot on Line 2 before committing fully."}
+   ],
+   phrases:[
+    {en:"I strongly believe that...",kr:"저는 ~라고 강하게 생각합니다."},
+    {en:"From my perspective...",kr:"제 관점에서는..."},
+    {en:"My recommendation would be to...",kr:"제 추천은 ~하는 것입니다."}
+   ],
+   tip:"변화 제안은 감정이 아닌 데이터로 하세요. '느낍니다'보다 '데이터는 ~를 보여줍니다'가 설득력이 높습니다."
+  },
+  {cat:"문제·우려", title:"품질 문제 긴급 보고",
+   situation:"생산 라인에서 불량 급증이 확인되었습니다. 긴급 회의에서 현황을 보고합니다.",
+   dialogue:[
+    {who:"me",name:"나",text:"I'll get straight to the point. <hl>We've seen a significant increase in</hl> defect rates on Line 4 — up 35% over the last 48 hours."},
+    {who:"other",name:"품질팀장",text:"What's causing it?"},
+    {who:"me",name:"나",text:"<hl>I see a gap in our current approach</hl> — the incoming material spec changed slightly but our QC threshold hasn't been updated. <hl>We need to address this before moving forward</hl> with today's production run."}
+   ],
+   phrases:[
+    {en:"We've seen a significant increase in...",kr:"~에서 큰 증가를 보였습니다."},
+    {en:"I see a gap in our current approach.",kr:"현재 접근 방식에 허점이 있습니다."},
+    {en:"We need to address this before moving forward.",kr:"앞으로 나아가기 전에 이 문제를 해결해야 합니다."}
+   ],
+   tip:"문제 보고는 상황(what) → 영향(so what) → 제안(now what) 순서로 말하면 패닉 없이 대화가 이어집니다."
+  },
+  {cat:"결정·액션", title:"후속 일정 확정",
+   situation:"회의가 끝날 시간입니다. 후속 일정을 잡고 역할을 명확히 해야 합니다.",
+   dialogue:[
+    {who:"me",name:"나",text:"<hl>I think we've covered everything for today.</hl> Let me recap — Sarah: revised timeline by Thursday. James: cost estimate by Wednesday."},
+    {who:"other",name:"팀원",text:"Should we meet again before the client presentation?"},
+    {who:"me",name:"나",text:"Yes. <hl>Let's reconnect on this next week</hl> — Tuesday at 10. <hl>Can you confirm your availability?</hl> <hl>I'll circulate the meeting notes to everyone</hl> by EOD."}
+   ],
+   phrases:[
+    {en:"I think we've covered everything for today.",kr:"오늘 모든 내용을 다룬 것 같습니다."},
+    {en:"Let's reconnect on this next week.",kr:"다음 주에 다시 이야기합시다."},
+    {en:"I'll circulate the meeting notes to everyone.",kr:"회의록을 모두에게 공유하겠습니다."}
+   ],
+   tip:"회의 후 24시간 이내에 회의록과 액션 아이템을 이메일로 보내는 것이 글로벌 비즈니스 에티켓입니다."
+  },
+  {cat:"질문·확인", title:"보고 형식 확인",
+   situation:"상사가 새로운 보고 형식을 요청했는데 의도가 명확하지 않아 확인이 필요합니다.",
+   dialogue:[
+    {who:"other",name:"상사",text:"Going forward, I want weekly status reports — more visual, less text."},
+    {who:"me",name:"나",text:"<hl>Just to clarify, are you saying that</hl> you want us to replace the written summary entirely with charts, or add visuals alongside the current format?"},
+    {who:"other",name:"상사",text:"More of the latter — keep the summary but lead with visuals."},
+    {who:"me",name:"나",text:"Got it. <hl>Could you walk me through</hl> what a good example looks like to you?"}
+   ],
+   phrases:[
+    {en:"Just to clarify, are you saying that...?",kr:"명확히 하자면, ~라고 말씀하시는 건가요?"},
+    {en:"Could you walk me through...?",kr:"~을 설명해 주실 수 있나요?"},
+    {en:"Could you elaborate on that?",kr:"좀 더 설명해 주실 수 있나요?"}
+   ],
+   tip:"확인 질문은 '이해 못 했다'는 신호가 아닙니다. 꼼꼼하고 주도적인 사람이라는 인상을 줍니다."
+  },
+  {cat:"진행 조율", title:"의견 충돌 중재",
+   situation:"두 팀원이 개발 방식을 두고 충돌하고 있습니다. 당신이 주관자로 조율해야 합니다.",
+   dialogue:[
+    {who:"other",name:"팀원A",text:"We should build this in-house. Outsourcing will create dependency issues."},
+    {who:"other",name:"팀원B",text:"In-house takes too long. We've already missed two deadlines."},
+    {who:"me",name:"나",text:"<hl>Let's go around the room and get everyone's input</hl> before we decide. I want to make sure all perspectives are heard."},
+    {who:"me",name:"나",text:"After hearing both sides — <hl>let's set a follow-up meeting</hl> to review a proper cost-benefit analysis. <hl>Let's make sure this is captured in the minutes</hl> as an open decision."}
+   ],
+   phrases:[
+    {en:"Let's go around the room.",kr:"모두의 의견을 들어봅시다."},
+    {en:"Let's set a follow-up meeting.",kr:"후속 회의를 잡읍시다."},
+    {en:"Let's make sure this is captured in the minutes.",kr:"회의록에 기록되도록 합시다."}
+   ],
+   tip:"충돌 상황에서 중재자는 편을 들지 말고 '프로세스'를 제안하세요. 분석 후 결정하자는 말은 양쪽 모두 수용하기 쉽습니다."
+  },
+  {cat:"협력·요청", title:"리드 역할 요청",
+   situation:"설비 데이터 분석 프로젝트의 리드를 타 부서 팀장에게 부탁합니다.",
+   dialogue:[
+    {who:"me",name:"나",text:"<hl>Could you take the lead on this?</hl> Your team has the sensor data infrastructure and modeling experience we need."},
+    {who:"other",name:"팀장",text:"I'm interested, but my team is stretched right now."},
+    {who:"me",name:"나",text:"I understand. <hl>Can we collaborate on this?</hl> My team handles domain knowledge and business requirements — yours handles the data pipeline. <hl>Let's align on priorities before we proceed.</hl>"}
+   ],
+   phrases:[
+    {en:"Could you take the lead on this?",kr:"이 건을 맡아주실 수 있나요?"},
+    {en:"Can we collaborate on this initiative?",kr:"이 이니셔티브에서 협력할 수 있을까요?"},
+    {en:"Let's align on the priorities before we proceed.",kr:"진행 전에 우선순위를 맞춰봅시다."}
+   ],
+   tip:"'당신이 다 해달라'는 요청보다 '우리 역할을 나누자'는 제안이 훨씬 수용되기 쉽습니다."
+  },
+  {cat:"발표 진행", title:"발표 중간 요약 & 전환",
+   situation:"긴 발표의 절반을 마치고 두 번째 파트로 넘어갑니다.",
+   dialogue:[
+    {who:"me",name:"나",text:"<hl>To summarize what I've covered so far:</hl> we've analyzed 6 months of downtime data, identified top 3 failure modes, and estimated the cost impact at 2.3B won annually."},
+    {who:"other",name:"청중",text:"How reliable is that cost estimate?"},
+    {who:"me",name:"나",text:"<hl>To give you some context,</hl> the figure is based on actual logged downtime hours and standard labor rates — conservative, not inflated. <hl>Moving on to the next point,</hl> I'll now cover the solution options and ROI projection."}
+   ],
+   phrases:[
+    {en:"To summarize what I've covered so far...",kr:"지금까지 다룬 내용을 요약하면..."},
+    {en:"To give you some context...",kr:"배경을 설명드리면..."},
+    {en:"Moving on to the next point...",kr:"다음 포인트로 넘어가면..."}
+   ],
+   tip:"발표 중간 '지금까지 요약'을 넣으면 청중의 이해도와 집중도가 크게 올라갑니다."
+  },
+  {cat:"동의·반대", title:"제안에 적극 동의하기",
+   situation:"동료가 제시한 고객 피드백 수집 프로세스 개선안에 동의하며 추가 의견을 보탭니다.",
+   dialogue:[
+    {who:"other",name:"동료",text:"I think we should add a post-service survey after every maintenance call."},
+    {who:"me",name:"나",text:"<hl>I completely agree with that.</hl> Real-time feedback is exactly what we're missing. <hl>That's a valid point</hl> — we've been relying on quarterly reviews, which are too slow."},
+    {who:"other",name:"동료",text:"Any thoughts on the format?"},
+    {who:"me",name:"나",text:"Keep it to 3 questions max so the completion rate stays high. <hl>I understand the concern, and I think we can address it by</hl> piloting it on the top 10 accounts first."}
+   ],
+   phrases:[
+    {en:"I completely agree with that.",kr:"완전히 동의합니다."},
+    {en:"That's a valid point.",kr:"그건 타당한 지적입니다."},
+    {en:"I understand the concern, and I think we can address it by...",kr:"우려되는 점을 이해하며, ~을 통해 해결할 수 있습니다."}
+   ],
+   tip:"동의할 때도 단순히 'Yes' 대신 왜 동의하는지 이유를 덧붙이면 대화가 훨씬 풍부해집니다."
+  }
+];
+
+const CATS = ["전체", ...new Set(SCENARIOS.map(s => s.cat))];
+const TODAY_COUNT = 5;
+
+let state = {
+  results: {},
+  streak: 0,
+  lastStudyDate: null,
+  todayDone: [],
+  studyQueue: [],
+  currentIdx: 0,
+  revealed: false,
+  studyCat: "전체",
+  listCat: "전체"
+};
+
+function loadState() {
+  try {
+    const s = localStorage.getItem("be_state_v2");
+    if (s) state = { ...state, ...JSON.parse(s) };
+  } catch(e) {}
+  updateStreak();
+}
+
+function saveState() {
+  try { localStorage.setItem("be_state_v2", JSON.stringify(state)); } catch(e) {}
+}
+
+function todayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function updateStreak() {
+  const today = todayKey();
+  if (state.lastStudyDate === today) return;
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  if (state.lastStudyDate !== yesterday) state.streak = 0;
+}
+
+function isTodayDone() {
+  return state.todayDone.length >= TODAY_COUNT && state.todayDone[0] === todayKey();
+}
+
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning,";
+  if (h < 18) return "Good afternoon,";
+  return "Good evening,";
+}
+
+function showScreen(name) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById("screen-" + name).classList.add("active");
+  document.getElementById("nav-" + name).classList.add("active");
+  if (name === "home") renderHome();
+  if (name === "list") renderList();
+  if (name === "stats") renderStats();
+}
+
+function renderHome() {
+  document.getElementById("greeting").textContent = getGreeting();
+  document.getElementById("streak-num").textContent = state.streak;
+  const totalDone = Object.values(state.results).filter(v => v === "good").length;
+  document.getElementById("total-done-num").textContent = totalDone;
+
+  const done = isTodayDone();
+  const pct = done ? 100 : Math.round((state.todayDone.length || 0) / TODAY_COUNT * 100);
+  document.getElementById("today-bar-fill").style.width = pct + "%";
+
+  if (done) {
+    document.getElementById("today-big").textContent = "오늘 학습 완료!";
+    document.getElementById("today-sub").textContent = "내일도 이어서 학습하세요 🔥";
+    const btn = document.getElementById("start-btn");
+    btn.textContent = "다시 복습하기";
+    btn.className = "start-btn";
+  } else {
+    document.getElementById("today-big").textContent = "시나리오 5개 · 약 10분";
+    document.getElementById("today-sub").textContent = "오늘의 학습을 시작하세요";
+    document.getElementById("start-btn").textContent = "오늘 학습 시작 →";
+    document.getElementById("start-btn").className = "start-btn";
+  }
+
+  const chips = document.getElementById("cat-chips");
+  chips.innerHTML = CATS.map(c =>
+    `<div class="cat-chip${state.studyCat === c ? " active" : ""}" onclick="selectCat('${c}')">${c}</div>`
+  ).join("");
+}
+
+function selectCat(c) {
+  state.studyCat = c;
+  renderHome();
+}
+
+function startStudy() {
+  const pool = SCENARIOS.map((s, i) => i).filter(i => {
+    if (state.studyCat !== "전체" && SCENARIOS[i].cat !== state.studyCat) return false;
+    return true;
+  });
+  const again = pool.filter(i => state.results[i] === "again");
+  const unseen = pool.filter(i => !state.results[i]);
+  const done = pool.filter(i => state.results[i] === "good");
+  let queue = [...again, ...unseen, ...done].slice(0, TODAY_COUNT);
+  if (queue.length === 0) queue = pool.slice(0, TODAY_COUNT);
+  state.studyQueue = queue;
+  state.currentIdx = 0;
+  state.revealed = false;
+  showScreen("study");
+  renderScenario();
+}
+
+function goHome() {
+  showScreen("home");
+}
+
+function renderScenario() {
+  const scroll = document.getElementById("scenario-scroll");
+  const progText = document.getElementById("study-prog-text");
+  const progFill = document.getElementById("study-prog-fill");
+
+  const pos = state.currentIdx;
+  const total = state.studyQueue.length;
+
+  if (pos >= total) {
+    // done
+    const good = state.studyQueue.filter(i => state.results[i] === "good").length;
+    const again = state.studyQueue.filter(i => state.results[i] === "again").length;
+    if (!isTodayDone()) {
+      state.todayDone = [todayKey()];
+      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      if (state.lastStudyDate === yesterday || state.lastStudyDate === todayKey()) {
+        state.streak = (state.streak || 0) + (state.lastStudyDate === yesterday ? 1 : 0);
+      } else {
+        state.streak = 1;
+      }
+      state.lastStudyDate = todayKey();
+      if (state.streak === 0) state.streak = 1;
+      saveState();
+    }
+    progText.textContent = total + " / " + total;
+    progFill.style.width = "100%";
+    scroll.innerHTML = `<div class="done-screen">
+      <div class="done-icon">🎉</div>
+      <div class="done-title">오늘 학습 완료!</div>
+      <div class="done-stats">
+        <div class="done-stat"><div class="done-stat-n g">${good}</div><div class="done-stat-l">이해</div></div>
+        <div class="done-stat"><div class="done-stat-n r">${again}</div><div class="done-stat-l">복습 필요</div></div>
+      </div>
+      <div class="done-sub">내일도 이어서 학습하면<br>스트릭이 계속됩니다 🔥</div>
+      <button class="done-back-btn" onclick="goHome()">홈으로 →</button>
+    </div>`;
+    return;
+  }
+
+  progText.textContent = (pos + 1) + " / " + total;
+  progFill.style.width = Math.round((pos / total) * 100) + "%";
+
+  const si = state.studyQueue[pos];
+  const sc = SCENARIOS[si];
+
+  const dlg = sc.dialogue.map(d => {
+    const isMe = d.who === "me";
+    const txt = d.text.replace(/<hl>(.*?)<\/hl>/g, '<span class="hl">$1</span>');
+    return `<div>
+      <div class="msg-name" style="text-align:${isMe ? "right" : "left"}">${d.name}</div>
+      <div class="msg-row${isMe ? " me" : ""}">
+        <div class="av ${isMe ? "av-me" : "av-other"}">${d.name[0]}</div>
+        <div class="bubble ${isMe ? "bubble-me" : "bubble-other"}">${txt}</div>
+      </div>
+    </div>`;
+  }).join("");
+
+  const phrasesHtml = sc.phrases.map(p =>
+    `<div class="phrase-row"><div class="phrase-en">${p.en}</div><div class="phrase-kr">${p.kr}</div></div>`
+  ).join("");
+
+  scroll.innerHTML = `
+    <div class="sc-situation-box">${sc.situation}</div>
+    <div class="chat-area">${dlg}</div>
+    ${state.revealed ? `
+      <div class="reveal-section">
+        <div class="phrases-box">${phrasesHtml}</div>
+      </div>
+      <div class="tip-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        ${sc.tip}
+      </div>
+      <div class="mark-row">
+        <button class="mark-btn mark-again" onclick="markCard('again')">↩ 다시 볼게요</button>
+        <button class="mark-btn mark-good" onclick="markCard('good')">✓ 이해했어요</button>
+      </div>` : `
+      <button class="reveal-btn" onclick="revealCard()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        핵심 표현 & 팁 확인
+      </button>`}
+  `;
+  scroll.scrollTop = 0;
+}
+
+function revealCard() {
+  state.revealed = true;
+  renderScenario();
+}
+
+function markCard(result) {
+  const si = state.studyQueue[state.currentIdx];
+  state.results[si] = result;
+  state.currentIdx++;
+  state.revealed = false;
+  saveState();
+  renderScenario();
+}
+
+function renderList() {
+  const cats = CATS;
+  document.getElementById("list-filter").innerHTML = cats.map(c =>
+    `<div class="lf-chip${state.listCat === c ? " on" : ""}" onclick="setListCat('${c}')">${c}</div>`
+  ).join("");
+
+  const filtered = SCENARIOS.filter((s, i) => state.listCat === "전체" || s.cat === state.listCat);
+  document.getElementById("list-scroll").innerHTML = filtered.map((s) => {
+    const gi = SCENARIOS.indexOf(s);
+    const r = state.results[gi];
+    const dc = r === "good" ? "dot-good" : r === "again" ? "dot-again" : "dot-none";
+    return `<div class="list-item" onclick="jumpToScenario(${gi})">
+      <div class="li-dot ${dc}"></div>
+      <div class="li-info">
+        <div class="li-title">${s.title}</div>
+        <div class="li-cat">${s.cat}</div>
+      </div>
+      <div class="li-arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg></div>
+    </div>`;
+  }).join("");
+}
+
+function setListCat(c) {
+  state.listCat = c;
+  renderList();
+}
+
+function jumpToScenario(gi) {
+  state.studyQueue = [gi];
+  state.currentIdx = 0;
+  state.revealed = false;
+  showScreen("study");
+  renderScenario();
+}
+
+function renderStats() {
+  const total = SCENARIOS.length;
+  const good = Object.values(state.results).filter(v => v === "good").length;
+  const again = Object.values(state.results).filter(v => v === "again").length;
+  const pct = Math.round(good / total * 100);
+
+  const today = new Date();
+  const weekDays = ["일","월","화","수","목","금","토"];
+  const weekHtml = Array.from({length: 7}, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() - 6 + i);
+    const key = d.toISOString().slice(0, 10);
+    const isToday = key === todayKey();
+    const isDone = state.lastStudyDate === key || (isToday && isTodayDone());
+    const cls = isToday ? "day-today" : isDone ? "day-done" : "day-miss";
+    return `<div class="day-pill">
+      <div class="day-circle ${cls}">${d.getDate()}</div>
+      <div>${weekDays[d.getDay()]}</div>
+    </div>`;
+  }).join("");
+
+  const catStats = CATS.filter(c => c !== "전체").map(cat => {
+    const idxs = SCENARIOS.map((s, i) => s.cat === cat ? i : -1).filter(i => i >= 0);
+    const done = idxs.filter(i => state.results[i] === "good").length;
+    const pct = idxs.length > 0 ? Math.round(done / idxs.length * 100) : 0;
+    return { cat, done, total: idxs.length, pct };
+  });
+
+  const catHtml = catStats.map(c =>
+    `<div class="cat-prog-row">
+      <div class="cat-prog-info"><span>${c.cat}</span><span class="cat-prog-pct">${c.done}/${c.total} · ${c.pct}%</span></div>
+      <div class="cat-prog-track"><div class="cat-prog-fill" style="width:${c.pct}%"></div></div>
+    </div>`
+  ).join("");
+
+  document.getElementById("stats-scroll").innerHTML = `
+    <div class="big-stat-row">
+      <div class="big-stat-card"><div class="big-stat-n amber">${state.streak}</div><div class="big-stat-l">🔥 연속 학습일</div></div>
+      <div class="big-stat-card"><div class="big-stat-n teal">${pct}%</div><div class="big-stat-l">전체 완료율</div></div>
+      <div class="big-stat-card"><div class="big-stat-n accent">${good}</div><div class="big-stat-l">이해한 시나리오</div></div>
+      <div class="big-stat-card"><div class="big-stat-n" style="color:var(--coral)">${again}</div><div class="big-stat-l">복습 필요</div></div>
+    </div>
+    <div class="stats-section-title">최근 7일</div>
+    <div class="week-strip">${weekHtml}</div>
+    <div class="stats-section-title">카테고리별 진도</div>
+    <div class="cat-progress">${catHtml}</div>
+    <button class="reset-btn" onclick="resetAll()">학습 데이터 초기화</button>
+  `;
+}
+
+function resetAll() {
+  if (!confirm("모든 학습 데이터를 초기화할까요?")) return;
+  state.results = {}; state.streak = 0; state.lastStudyDate = null; state.todayDone = [];
+  saveState();
+  renderStats();
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+loadState();
+renderHome();
+</script>
+</body>
+</html>
